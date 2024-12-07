@@ -1,0 +1,26 @@
+# presentation_builder.py
+
+from pptx import Presentation
+import openai
+
+def generate_slide_content(bullet_points):
+    openai.api_key = "your_openai_key"
+    prompt = "Expand these points into full sentences:\n" + "\n".join(bullet_points)
+    response = openai.Completion.create(engine="text-davinci-003", prompt=prompt, max_tokens=100)
+    return response.choices[0].text.strip().split("\n")
+
+def create_presentation(title, bullet_points):
+    content = generate_slide_content(bullet_points)
+    prs = Presentation()
+    slide = prs.slides.add_slide(prs.slide_layouts[0])
+    slide.shapes.title.text = title
+
+    slide = prs.slides.add_slide(prs.slide_layouts[1])
+    for point in content:
+        slide.shapes.title.text = title
+        slide.placeholders[1].text += f"- {point}\n"
+
+    prs.save("presentation.pptx")
+
+# Usage
+create_presentation("AI Technology", ["AI will shape the future", "It is transforming industries"])
